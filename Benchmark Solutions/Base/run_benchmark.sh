@@ -2,7 +2,7 @@
 
 set -e
 
-SOLUTIONS_DIR="/app/Soluciones"
+SOLUTIONS_DIR="/Benchmark Solutions/Soluciones"
 
 # Valor esperado de la suma de los primeros 10,000 primos (si lo conocemos)
 EXPECTED_SUM=":INSERTA_AQUI_EL_VALOR_CORRECTO:"
