@@ -1,26 +1,26 @@
-# Etapa 1: Construcción
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
-WORKDIR /src
-
-# Copiar archivos de proyecto
-COPY *.csproj ./
-
-# Restaurar dependencias
-RUN dotnet restore
-
-# Copiar el resto del código
-COPY . ./
-
-# Publicar en modo Release
-RUN dotnet publish -c Release -o /app
-
-# Etapa 2: Runtime
-FROM mcr.microsoft.com/dotnet/runtime:7.0 AS final
 WORKDIR /app
 
-# Copiamos la aplicación publicada desde la etapa anterior
-COPY --from=build /app ./
+# Copiamos tu archivo fuente
+COPY solve.cs .
 
-# Definir el punto de entrada
-ENTRYPOINT ["dotnet", "SumaFibonacci.dll"]
+# Crear un nuevo proyecto de consola con un nombre genérico (por ejemplo "temp")
+RUN dotnet new console -n temp
+
+# Borramos el Program.cs que se genera por defecto
+RUN rm temp/Program.cs
+
+# Movemos solve.cs al interior de la carpeta del proyecto (temp)
+RUN mv solve.cs temp/
+
+WORKDIR /app/temp
+
+# Restauramos y publicamos
+RUN dotnet restore
+RUN dotnet publish -c Release -o /out
+
+FROM mcr.microsoft.com/dotnet/runtime:7.0
+WORKDIR /app
+COPY --from=build /app/temp/out .
+ENTRYPOINT ["dotnet", "temp.dll"]
 
