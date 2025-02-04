@@ -52,4 +52,8 @@ func main() {
     }
 
     _, err = fmt.Fprintf(file, "Tiempo transcurrido: %d ms\n", duracion)
-    if e
+    if err != nil {
+        log.Fatalf("Error escribiendo en el archivo: %v", err)
+    }
+}
+
