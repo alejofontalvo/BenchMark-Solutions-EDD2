@@ -1,45 +1,32 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
-set -e
+SOLUTIONS_DIR="Soluciones"
+LANGUAGES="C# GO Java JavaScript Python"
 
-SOLUTIONS_DIR="/Benchmark Solutions/Soluciones"
+for lang in $LANGUAGES; do
+    echo "==== Construyendo y ejecutando $lang ===="
 
-# Valor esperado de la suma de los primeros 10,000 primos (si lo conocemos)
-EXPECTED_SUM=":INSERTA_AQUI_EL_VALOR_CORRECTO:"
+    cd "$SOLUTIONS_DIR/$lang"
 
-echo "Lenguaje | Tiempo (ms) | Correcto?"
-echo "---------|-------------|----------"
+    # Construir la imagen
+    docker build -t ${lang,,}-solution .
 
-for lang_dir in $(ls -d "$SOLUTIONS_DIR"/*/); do
-  lang_name=$(basename "${lang_dir}")
+    # Ejecutar el contenedor y capturar salida
+    # (La salida debe ser el tiempo en milisegundos)
+    TIME_MS=$(docker run --rm ${lang,,}-solution)
 
-  # Construir la imagen de la solución para cada lenguaje
-  docker build -t "solution-${lang_name}" "${lang_dir}"
+    # Verificar output.txt (opcional: copiando con docker cp o
+    # montando volumen; dependerá de cómo definiste el Dockerfile)
+    # Ejemplo usando contenedor efímero:
+    CID=$(docker create ${lang,,}-solution)
+    docker cp $CID:/app/output.txt ./output.txt
+    docker rm $CID
 
-  # Ejecutar el contenedor (no imprime nada en stdout)
-  # y extraer el archivo output.txt con la suma y el tiempo
-  docker run --name "temp_container_${lang_name}" "solution-${lang_name}" >/dev/null 2>&1
-  
-  # Copiar el archivo al host
-  docker cp "temp_container_${lang_name}:/app/output.txt" "/tmp/output_${lang_name}.txt"
-  
-  # Eliminar el contenedor temporal
-  docker rm "temp_container_${lang_name}" >/dev/null
+    # Leer el resultado
+    RESULT=$(cat output.txt)
 
-  # Leer las dos líneas de output.txt:
-  #  - Primera línea: SUMA
-  #  - Segunda línea: TIEMPO
-  ACTUAL_SUM=$(sed -n '1p' "/tmp/output_${lang_name}.txt")
-  EXECUTION_TIME=$(sed -n '2p' "/tmp/output_${lang_name}.txt")
-  
-  # Comparar la suma real vs la esperada
-  if [ "$ACTUAL_SUM" = "$EXPECTED_SUM" ]; then
-    CORRECT="Sí"
-  else
-    CORRECT="No (valor: $ACTUAL_SUM)"
-  fi
-
-  # Imprimir resultados en formato tabla
-  echo "${lang_name} | ${EXECUTION_TIME} | ${CORRECT}"
+    echo "Tiempo (ms) = $TIME_MS, Resultado = $RESULT"
+    cd ../../
 done
+
 
