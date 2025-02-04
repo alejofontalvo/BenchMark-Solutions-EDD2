@@ -17,10 +17,14 @@ WORKDIR /app/temp
 
 # Restauramos y publicamos
 RUN dotnet restore
-RUN dotnet publish -c Release -o /out
+RUN dotnet publish -c Release -o out  # <---- RUTA RELATIVA: "out", sin "/"
 
+# --------------------
+# Etapa 2: Runtime
 FROM mcr.microsoft.com/dotnet/runtime:7.0
 WORKDIR /app
+
+# Copiamos el contenido que se generó en /app/temp/out
 COPY --from=build /app/temp/out .
 ENTRYPOINT ["dotnet", "temp.dll"]
 
