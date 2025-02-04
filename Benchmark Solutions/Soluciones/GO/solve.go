@@ -39,7 +39,7 @@ func main() {
     fmt.Printf("Tiempo transcurrido: %d ms\n", duracion)
 
     // Crear (o sobrescribir) el archivo de salida
-    file, err := os.Create("resultadoGO.txt")
+    file, err := os.Create("output.txt")
     if err != nil {
         log.Fatalf("Error creando el archivo: %v", err)
     }
