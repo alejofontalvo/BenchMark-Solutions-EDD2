@@ -31,7 +31,7 @@ public class solve {
         System.out.println("Tiempo de ejecución: " + tiempoEjecucion + " ms");
 
         // Escribimos los resultados en un archivo de texto
-        try (FileWriter writer = new FileWriter("resultadoJava.txt")) {
+        try (FileWriter writer = new FileWriter("output.txt")) {
             writer.write("La suma de los primeros " + n + " términos de Fibonacci es: " + resultado + "\n");
             writer.write("Tiempo de ejecución: " + tiempoEjecucion + " ms\n");
         } catch (IOException e) {
