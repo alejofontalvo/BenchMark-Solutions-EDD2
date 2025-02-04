@@ -38,6 +38,6 @@ const contenidoArchivo =
 Tiempo transcurrido: ${tiempoTranscurrido} ms`;
 
 // Escribimos el contenido en un archivo .txt
-fs.writeFileSync('resultadoJS.txt', contenidoArchivo);
+fs.writeFileSync('output.txt', contenidoArchivo);
 
 console.log('El resultado se ha guardado en resultado.txt');
