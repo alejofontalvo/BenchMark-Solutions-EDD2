@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  benchmark-runner:
+    image: docker:dind
+    privileged: true   # Necesario para docker-in-docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    entrypoint: ["/bin/sh", "-c"]
+    # Los pasos que se ejecutarán dentro del contenedor
+    # podrían estar en un script .sh que clone, construya y ejecute.
+    command: >
+      apk add --no-cache git &&
+      git clone https://github.com/usuario/benchmark-repo.git &&
+      cd benchmark-repo &&
+      # Ejecución del benchmark
+      sh run_benchmark.sh
+
